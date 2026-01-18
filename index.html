@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Review Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #dfe8f7 0%, #e8eef5 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(90, 123, 164, 0.05) 1px, transparent 1px),
+                radial-gradient(circle at 80% 80%, rgba(59, 168, 159, 0.05) 1px, transparent 1px),
+                radial-gradient(circle at 40% 30%, rgba(224, 120, 86, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px, 80px 80px, 100px 100px;
+            background-position: 0 0, 25px 25px, 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 40px;
+            animation: slideDown 0.6s ease;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #5a7ba4 0%, #3ba89f 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.8;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .form-section {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            animation: slideUp 0.6s ease;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+            border-left: 5px solid #5a7ba4;
+            border-top: 2px solid #3ba89f;
+        }
+
+        .form-section h2 {
+            color: #5a7ba4;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #5a7ba4;
+            box-shadow: 0 0 0 3px rgba(90, 123, 164, 0.15);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        .rating-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .star {
+            font-size: 2em;
+            cursor: pointer;
+            transition: transform 0.2s, color 0.2s;
+            color: #ddd;
+        }
+
+        .star:hover,
+        .star.active {
+            color: #ffc107;
+            transform: scale(1.2);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #5a7ba4 0%, #4a6fa5 100%);
+            color: white;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(90, 123, 164, 0.4);
+        }
+
+        .btn-reset {
+            background: #e8eef5;
+            color: #5a7ba4;
+        }
+
+        .btn-reset:hover {
+            background: #dfe8f7;
+        }
+
+        .reviews-section {
+            animation: slideUp 0.6s ease 0.2s both;
+        }
+
+        .filters {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-group label {
+            margin: 0;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .filter-group select {
+            margin: 0;
+        }
+
+        .clear-btn {
+            padding: 8px 16px;
+            background: #e07856;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-left: auto;
+        }
+
+        .clear-btn:hover {
+            background: #d26641;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(224, 120, 86, 0.3);
+        }
+
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .review-card {
+            background: #ffffff;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            animation: fadeIn 0.5s ease;
+            border-top: 4px solid #5a7ba4;
+        }
+
+        .review-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .review-header {
+            background: linear-gradient(135deg, #5a7ba4 0%, #4a6fa5 100%);
+            color: white;
+            padding: 20px;
+        }
+
+        .game-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .game-platform {
+            font-size: 0.9em;
+            opacity: 0.9;
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .review-content {
+            padding: 20px;
+        }
+
+        .rating-display {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+
+        .stars {
+            color: #ffc107;
+            font-size: 1.3em;
+            letter-spacing: 2px;
+        }
+
+        .rating-score {
+            background: #5a7ba4;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9em;
+        }
+
+        .review-text {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            max-height: 120px;
+            overflow-y: auto;
+            font-size: 0.95em;
+        }
+
+        .review-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85em;
+            color: #999;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            margin-bottom: 15px;
+        }
+
+        .review-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-delete {
+            flex: 1;
+            padding: 8px;
+            background: #e07856;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+
+        .btn-delete:hover {
+            background: #d26641;
+        }
+
+        .btn-edit {
+            flex: 1;
+            padding: 8px;
+            background: #3ba89f;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+
+        .btn-edit:hover {
+            background: #2b9d95;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .stats {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #5a7ba4 0%, #4a6fa5 100%);
+            color: white;
+            border-radius: 10px;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .form-section {
+                position: static;
+            }
+
+            header h1 {
+                font-size: 2em;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .clear-btn {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .reviews-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .edit-label {
+            background: #f0ead1;
+            color: #856404;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Game Review Hub</h1>
+            <p>Review Games dari berbagai Platform - PS, PC, Mobile</p>
+        </header>
+
+        <div class="stats" id="stats"></div>
+
+        <div class="main-content">
+            <div class="form-section">
+                <h2>Tambah Review</h2>
+                <form id="reviewForm">
+                    <div id="editLabel" class="edit-label" style="display: none;">
+                        Sedang mengedit review...
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gameName">Judul Game *</label>
+                        <input type="text" id="gameName" placeholder="Contoh: Elden Ring" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="platform">Platform *</label>
+                        <select id="platform" required>
+                            <option value="">Pilih Platform</option>
+                            <option value="PS5">PlayStation 5</option>
+                            <option value="PS4">PlayStation 4</option>
+                            <option value="PC">PC</option>
+                            <option value="Xbox Series X">Xbox Series X</option>
+                            <option value="Xbox One">Xbox One</option>
+                            <option value="Nintendo Switch">Nintendo Switch</option>
+                            <option value="Mobile (iOS)">Mobile (iOS)</option>
+                            <option value="Mobile (Android)">Mobile (Android)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Rating (1-5) *</label>
+                        <div class="rating-container" id="ratingContainer"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reviewText">Review Anda</label>
+                        <textarea id="reviewText" placeholder="Tulis review Anda tentang game ini..."></textarea>
+                    </div>
+
+                    <div class="buttons">
+                        <button type="submit" class="btn-submit">Simpan Review</button>
+                        <button type="reset" class="btn-reset">Reset</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="reviews-section">
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="filterPlatform">Filter Platform</label>
+                        <select id="filterPlatform">
+                            <option value="">Semua Platform</option>
+                            <option value="PS5">PlayStation 5</option>
+                            <option value="PS4">PlayStation 4</option>
+                            <option value="PC">PC</option>
+                            <option value="Xbox Series X">Xbox Series X</option>
+                            <option value="Xbox One">Xbox One</option>
+                            <option value="Nintendo Switch">Nintendo Switch</option>
+                            <option value="Mobile (iOS)">Mobile (iOS)</option>
+                            <option value="Mobile (Android)">Mobile (Android)</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="sortBy">Urutkan</label>
+                        <select id="sortBy">
+                            <option value="newest">Terbaru</option>
+                            <option value="rating-high">Rating Tertinggi</option>
+                            <option value="rating-low">Rating Terendah</option>
+                            <option value="name">Nama (A-Z)</option>
+                        </select>
+                    </div>
+                    <button class="clear-btn" onclick="clearAllReviews()">Hapus Semua Data</button>
+                </div>
+
+                <div class="reviews-grid" id="reviewsGrid">
+                    <div class="empty-state">
+                        <h3>Belum ada review</h3>
+                        <p>Mulai tambahkan review game favorit Anda!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'gameReviews';
+        let reviews = [];
+        let editingId = null;
+        let currentRating = 0;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadReviews();
+            createRatingStars();
+            setupEventListeners();
+            renderReviews();
+            updateStats();
+        });
+
+        function createRatingStars() {
+            const container = document.getElementById('ratingContainer');
+            for (let i = 1; i <= 5; i++) {
+                const star = document.createElement('span');
+                star.className = 'star';
+                star.textContent = '★';
+                star.dataset.value = i;
+                star.addEventListener('click', () => setRating(i));
+                star.addEventListener('mouseover', () => hoverRating(i));
+                container.appendChild(star);
+            }
+        }
+
+        function setRating(value) {
+            currentRating = value;
+            updateRatingDisplay();
+        }
+
+        function hoverRating(value) {
+            const stars = document.querySelectorAll('#ratingContainer .star');
+            stars.forEach((star, index) => {
+                if (index < value) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        function updateRatingDisplay() {
+            const stars = document.querySelectorAll('#ratingContainer .star');
+            stars.forEach((star, index) => {
+                if (index < currentRating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        function setupEventListeners() {
+            document.getElementById('reviewForm').addEventListener('submit', handleSubmit);
+            document.getElementById('filterPlatform').addEventListener('change', renderReviews);
+            document.getElementById('sortBy').addEventListener('change', renderReviews);
+        }
+
+        function handleSubmit(e) {
+            e.preventDefault();
+
+            if (currentRating === 0) {
+                alert('Silakan berikan rating terlebih dahulu!');
+                return;
+            }
+
+            const review = {
+                id: editingId || Date.now(),
+                gameName: document.getElementById('gameName').value,
+                platform: document.getElementById('platform').value,
+                rating: currentRating,
+                reviewText: document.getElementById('reviewText').value,
+                date: new Date().toLocaleDateString('id-ID')
+            };
+
+            if (editingId) {
+                reviews = reviews.map(r => r.id === editingId ? review : r);
+                editingId = null;
+                document.getElementById('editLabel').style.display = 'none';
+            } else {
+                reviews.unshift(review);
+            }
+
+            saveReviews();
+            resetForm();
+            renderReviews();
+            updateStats();
+        }
+
+        function resetForm() {
+            document.getElementById('reviewForm').reset();
+            currentRating = 0;
+            updateRatingDisplay();
+            editingId = null;
+            document.getElementById('editLabel').style.display = 'none';
+        }
+
+        function editReview(id) {
+            const review = reviews.find(r => r.id === id);
+            if (!review) return;
+
+            document.getElementById('gameName').value = review.gameName;
+            document.getElementById('platform').value = review.platform;
+            currentRating = review.rating;
+            updateRatingDisplay();
+            document.getElementById('reviewText').value = review.reviewText;
+
+            editingId = id;
+            document.getElementById('editLabel').style.display = 'block';
+
+            document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function deleteReview(id) {
+            if (confirm('Yakin ingin menghapus review ini?')) {
+                reviews = reviews.filter(r => r.id !== id);
+                saveReviews();
+                renderReviews();
+                updateStats();
+            }
+        }
+
+        function renderReviews() {
+            const grid = document.getElementById('reviewsGrid');
+            let filtered = [...reviews];
+
+            // Filter by platform
+            const platformFilter = document.getElementById('filterPlatform').value;
+            if (platformFilter) {
+                filtered = filtered.filter(r => r.platform === platformFilter);
+            }
+
+            // Sort
+            const sortBy = document.getElementById('sortBy').value;
+            switch(sortBy) {
+                case 'rating-high':
+                    filtered.sort((a, b) => b.rating - a.rating);
+                    break;
+                case 'rating-low':
+                    filtered.sort((a, b) => a.rating - b.rating);
+                    break;
+                case 'name':
+                    filtered.sort((a, b) => a.gameName.localeCompare(b.gameName));
+                    break;
+                case 'newest':
+                default:
+                    // Already sorted by newest (unshift)
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Tidak ada review</h3>
+                        <p>Coba ubah filter atau tambahkan review baru!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(review => `
+                <div class="review-card">
+                    <div class="review-header">
+                        <div class="game-title">${review.gameName}</div>
+                        <div class="game-platform">${review.platform}</div>
+                    </div>
+                    <div class="review-content">
+                        <div class="rating-display">
+                            <span class="stars">${'★'.repeat(review.rating)}${'☆'.repeat(5-review.rating)}</span>
+                            <span class="rating-score">${review.rating}/5</span>
+                        </div>
+                        ${review.reviewText ? `<div class="review-text">${escapeHtml(review.reviewText)}</div>` : ''}
+                        <div class="review-meta">
+                            <span>${review.date}</span>
+                        </div>
+                        <div class="review-actions">
+                            <button class="btn-edit" onclick="editReview(${review.id})">Edit</button>
+                            <button class="btn-delete" onclick="deleteReview(${review.id})">Hapus</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateStats() {
+            const stats = document.getElementById('stats');
+            const avgRating = reviews.length > 0 ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1) : 0;
+            const platformCounts = {};
+            reviews.forEach(r => {
+                platformCounts[r.platform] = (platformCounts[r.platform] || 0) + 1;
+            });
+            const topPlatform = Object.entries(platformCounts).sort((a, b) => b[1] - a[1])[0];
+
+            stats.innerHTML = `
+                <div class="stat-item">
+                    <div class="stat-number">${reviews.length}</div>
+                    <div class="stat-label">Total Review</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">${avgRating}</div>
+                    <div class="stat-label">Rating Rata-rata</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">${topPlatform ? topPlatform[1] : 0}</div>
+                    <div class="stat-label">Platform Terbanyak</div>
+                </div>
+            `;
+        }
+
+        function saveReviews() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(reviews));
+        }
+
+        function loadReviews() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            reviews = stored ? JSON.parse(stored) : [];
+        }
+
+        function clearAllReviews() {
+            if (confirm('Yakin ingin menghapus SEMUA review? Tindakan ini tidak dapat dibatalkan!')) {
+                reviews = [];
+                saveReviews();
+                resetForm();
+                renderReviews();
+                updateStats();
+                alert('Semua data review telah dihapus!');
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
